@@ -1,22 +1,163 @@
-# Vozescolarsp
-Aplicativo para combater o bullying nas escolas
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>VozEscolar - Denúncias Anônimas e Seguras</title>
-  <style>
-    body { font-family: Arial, sans-serif; margin:0; padding:0; background:#f9f9f9; color:#333; }
-    header { background:#2a6ebb; color:#fff; padding:15px 20px; display:flex; justify-content:space-between; align-items:center; }
-    header h1 { margin:0; font-size:1.5em; }
-    nav a { color:#fff; text-decoration:none; margin-left:20px; font-weight:bold; }
-    nav a:hover { text-decoration:underline; }
+import React, { useState } from "react";
 
-    main { padding:20px; max-width:900px; margin:auto; }
+function App() {
+  const [user, setUser] = useState(null);
+  const [emailInput, setEmailInput] = useState("");
+  const [relatos, setRelatos] = useState([]);
+  const [form, setForm] = useState({
+    tipo: "",
+    data: "",
+    local: "",
+    envolvidos: "",
+    descricao: "",
+  });
 
-    section { margin-bottom:50px; }
+  function login() {
+    if (emailInput.trim()) {
+      setUser(emailInput.trim());
+    } else {
+      alert("Digite um e-mail válido");
+    }
+  }
 
+  function logout() {
+    setUser(null);
+    setEmailInput("");
+    setForm({
+      tipo: "",
+      data: "",
+      local: "",
+      envolvidos: "",
+      descricao: "",
+    });
+  }
+
+  function handleFormChange(e) {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  }
+
+  function enviarRelato() {
+    if (
+      form.tipo &&
+      form.data &&
+      form.local &&
+      form.envolvidos &&
+      form.descricao
+    ) {
+      setRelatos([...relatos, { ...form, id: Date.now() }]);
+      alert("Relato enviado com sucesso!");
+      setForm({
+        tipo: "",
+        data: "",
+        local: "",
+        envolvidos: "",
+        descricao: "",
+      });
+    } else {
+      alert("Preencha todos os campos do formulário.");
+    }
+  }
+
+  if (!user) {
+    return (
+      <div style={{ padding: 20 }}>
+        <h2>Login - VozEscolar</h2>
+        <input
+          type="email"
+          value={emailInput}
+          onChange={(e) => setEmailInput(e.target.value)}
+          placeholder="Digite seu e-mail"
+          style={{ padding: "8px", width: "250px" }}
+        />
+        <button onClick={login} style={{ marginLeft: 10, padding: "8px" }}>
+          Entrar
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <div style={{ maxWidth: 600, margin: "20px auto", fontFamily: "Arial" }}>
+      <header style={{ marginBottom: 20 }}>
+        <h1>Bem-vindo, {user}</h1>
+        <button onClick={logout}>Sair</button>
+      </header>
+
+      <section>
+        <h2>Enviar Relato</h2>
+        <div>
+          <label>Tipo de Bullying:</label>
+          <select name="tipo" value={form.tipo} onChange={handleFormChange}>
+            <option value="">Selecione</option>
+            <option value="Físico">Físico</option>
+            <option value="Psicológico">Psicológico</option>
+            <option value="Verbal">Verbal</option>
+            <option value="Virtual">Virtual</option>
+          </select>
+        </div>
+
+        <div>
+          <label>Data e hora:</label>
+          <input
+            type="datetime-local"
+            name="data"
+            value={form.data}
+            onChange={handleFormChange}
+          />
+        </div>
+
+        <div>
+          <label>Local:</label>
+          <input
+            type="text"
+            name="local"
+            value={form.local}
+            onChange={handleFormChange}
+          />
+        </div>
+
+        <div>
+          <label>Pessoas envolvidas:</label>
+          <input
+            type="text"
+            name="envolvidos"
+            value={form.envolvidos}
+            onChange={handleFormChange}
+          />
+        </div>
+
+        <div>
+          <label>Descrição:</label>
+          <textarea
+            name="descricao"
+            value={form.descricao}
+            onChange={handleFormChange}
+          />
+        </div>
+
+        <button onClick={enviarRelato} style={{ marginTop: 10 }}>
+          Enviar
+        </button>
+      </section>
+
+      <section>
+        <h2>Relatos enviados</h2>
+        {relatos.length === 0 && <p>Nenhum relato enviado ainda.</p>}
+        {relatos.map((r) => (
+          <div key={r.id} style={{ border: "1px solid #ddd", marginTop: 10, padding: 10 }}>
+            <strong>Tipo:</strong> {r.tipo} <br />
+            <strong>Data:</strong> {r.data} <br />
+            <strong>Local:</strong> {r.local} <br />
+            <strong>Envolvidos:</strong> {r.envolvidos} <br />
+            <strong>Descrição:</strong> {r.descricao}
+          </div>
+        ))}
+      </section>
+    </div>
+  );
+}
+
+export default App;
     h2 { color:#2a6ebb; margin-bottom:15px; border-bottom:2px solid #2a6ebb; padding-bottom:5px; }
 
     button { background:#2a6ebb; color:#fff; border:none; padding:12px 25px; font-size:1em; cursor:pointer; border-radius:5px; }
